@@ -1,33 +1,50 @@
 from board import Board
+from math import log2
+import neat
 
-if __name__ == '__main__':
+def smartLog2(val):
+    return log2(val) if val != 0 else 0
+
+def eval(genome, config):
     b = Board()
     b.placeTile()
     b.placeTile()
+
+    nn = neat.nn.FeedForwardNetwork.create(genome, config)
+
     while not b.isGameOver():
+        inputs = list(map(smartLog2, b.tiles.flatten()))
+        inputs.append(1)
 
-        print("\n--------")
-        print(f'SCORE: {b.score}\n')
-        print(b)
-        
-        direction = input("move: ")
+        output = nn.activate(inputs)
 
-        while True: 
-            if direction == "w" and b.canMove(Board.UP): break
-            if direction == "a" and b.canMove(Board.LEFT): break
-            if direction == "s" and b.canMove(Board.DOWN): break
-            if direction == "d" and b.canMove(Board.RIGHT): break
-            direction = input("no. move: ")
+        maxActivation = -1000000000
+        for i in range(4):
+            if output[i] > maxActivation and b.canMove(i):
+                maxActivation = output[i]
 
-        if direction == "w":
-            b.move(Board.UP)
-        if direction == "a":
-            b.move(Board.LEFT)
-        if direction == "s":
-            b.move(Board.DOWN)
-        if direction == "d":
-            b.move(Board.RIGHT)
-        
+        for i in range(4):
+            if output[i] >= maxActivation and b.canMove(i):
+                b.move(i)
+                break
+
+
         b.placeTile()
 
-    print(f'FINAL SCORE: {b.score}')
+    return int(b.score)
+    
+if __name__ == '__main__':
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                        neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                        'config')
+
+    # Create the population, which is the top-level object for a NEAT run.
+    p = neat.Population(config)
+
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+
+    # just give it a whole lotta parallel threads
+    te = neat.ParallelEvaluator(128, eval)
+    winner = p.run(te.evaluate)
