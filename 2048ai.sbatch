@@ -6,4 +6,4 @@
 #SBATCH --job-name=2048AI
 #SBATCH --output=2048.output
 
-srun python main.py
+srun python main.py > results.txt
