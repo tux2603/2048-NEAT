@@ -113,6 +113,65 @@ class Board():
                         elif self.tiles[search][row] != 0:
                             break
 
+    def peak(self, direction):
+        tiles = self.tiles.copy()
+
+        if direction == Board.UP:
+            for col in range(4):
+                for row in range(3, 0, -1):
+                    for search in range(row-1, -1, -1):
+                        if tiles[col][row] == 0:
+                            tiles[col][row] = tiles[col][search]
+                            tiles[col][search] = 0
+                        elif tiles[col][row] == tiles[col][search]:
+                            tiles[col][row] *= 2
+                            tiles[col][search] = 0
+                            break
+                        elif tiles[col][search] != 0:
+                            break
+
+        elif direction == Board.DOWN:
+            for col in range(4):
+                for row in range(3):
+                    for search in range(row+1, 4):
+                        if tiles[col][row] == 0:
+                            tiles[col][row] = tiles[col][search]
+                            tiles[col][search] = 0
+                        elif tiles[col][row] == tiles[col][search]:
+                            tiles[col][row] *= 2
+                            tiles[col][search] = 0
+                            break
+                        elif tiles[col][search] != 0:
+                            break
+
+        elif direction == Board.LEFT:
+            for row in range(4):
+                for col in range(3):
+                    for search in range(col+1, 4):
+                        if tiles[col][row] == 0:
+                            tiles[col][row] = tiles[search][row]
+                            tiles[search][row] = 0
+                        elif tiles[col][row] == tiles[search][row]:
+                            tiles[col][row] *= 2
+                            tiles[search][row] = 0
+                            break
+                        elif tiles[search][row] != 0:
+                            break
+
+        elif direction == Board.RIGHT:
+            for row in range(4):
+                for col in range(3, 0, -1):
+                    for search in range(col-1, -1, -1):
+                        if tiles[col][row] == 0:
+                            tiles[col][row] = tiles[search][row]
+                            tiles[search][row] = 0
+                        elif tiles[col][row] == tiles[search][row]:
+                            tiles[col][row] *= 2
+                            tiles[search][row] = 0
+                            break
+                        elif tiles[search][row] != 0:
+                            break
+
     def placeTile(self):
         validSquares = []
 

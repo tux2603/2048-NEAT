@@ -10,12 +10,13 @@ import pickle
 NUM_THREADS = 8
 runID = '0'
 generationNum = 0
+maxFitness = 0
 
 def smartLog2(val):
     return log2(val) if val != 0 else 0
 
 def eval(genomes, config):
-    global NUM_THREADS, generationNum
+    global NUM_THREADS, generationNum, maxFitness
 
     threadArgs = [[]] * NUM_THREADS
 
@@ -41,9 +42,11 @@ def eval(genomes, config):
         for genomeID, genome in genomes:
             genome.fitness = fitnessDictionary[genomeID]
             if bestGenomeID == genomeID:
-                genomeFile = open(f'{runID}gen{generationNum}.gnm', 'ab') 
-                pickle.dump(genome, genomeFile)                      
-                genomeFile.close() 
+                if genome.fitness > maxFitness:
+                    genomeFile = open(f'{runID}gen{generationNum}.gnm', 'ab') 
+                    pickle.dump(genome, genomeFile)                      
+                    genomeFile.close() 
+                    maxFitness = genome.fitness
 
     generationNum += 1
 

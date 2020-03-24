@@ -49,15 +49,12 @@ enabled_mutate_rate = 0.01
 # Keeps nodes from looping back onto themselves
 feed_forward = True
 
-# No brain to start with
-initial_connection = unconnected
+initial_connection = partial_nodirect 0.5
 
-# bug brains git bigger
 node_add_prob = 0.1
 node_delete_prob = 0.09
 
-# Shape of bug brains
-num_hidden = 4
+num_hidden = 10
 num_inputs = 17
 num_outputs = 4
 
