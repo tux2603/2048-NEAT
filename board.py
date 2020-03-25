@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 
+# I apologize for the lack of comments in this file. It handles a 2048 board, and is kinda a quick mess
 class Board():
     UP = 0
     RIGHT = 1
@@ -10,7 +11,7 @@ class Board():
 
     def __init__(self):
         self.score = 0
-        # If the computer gets good enough to excede 32 bit integers, that's good enough for me
+        # If the computer gets good enough to exceed 32 bit integers, that's good enough for me
         self.tiles = np.array([[0, 0, 0, 0],
                                [0, 0, 0, 0],
                                [0, 0, 0, 0],
@@ -53,68 +54,12 @@ class Board():
         return False
 
     def move(self, direction):
-        if direction == Board.UP:
-            for col in range(4):
-                for row in range(3, 0, -1):
-                    for search in range(row-1, -1, -1):
-                        if self.tiles[col][row] == 0:
-                            self.tiles[col][row] = self.tiles[col][search]
-                            self.tiles[col][search] = 0
-                        elif self.tiles[col][row] == self.tiles[col][search]:
-                            self.tiles[col][row] *= 2
-                            self.score += self.tiles[col][row]
-                            self.tiles[col][search] = 0
-                            break
-                        elif self.tiles[col][search] != 0:
-                            break
+        self.tiles, scoreDelta = self.peek(direction)
+        self.score += scoreDelta
 
-        elif direction == Board.DOWN:
-            for col in range(4):
-                for row in range(3):
-                    for search in range(row+1, 4):
-                        if self.tiles[col][row] == 0:
-                            self.tiles[col][row] = self.tiles[col][search]
-                            self.tiles[col][search] = 0
-                        elif self.tiles[col][row] == self.tiles[col][search]:
-                            self.tiles[col][row] *= 2
-                            self.score += self.tiles[col][row]
-                            self.tiles[col][search] = 0
-                            break
-                        elif self.tiles[col][search] != 0:
-                            break
-
-        elif direction == Board.LEFT:
-            for row in range(4):
-                for col in range(3):
-                    for search in range(col+1, 4):
-                        if self.tiles[col][row] == 0:
-                            self.tiles[col][row] = self.tiles[search][row]
-                            self.tiles[search][row] = 0
-                        elif self.tiles[col][row] == self.tiles[search][row]:
-                            self.tiles[col][row] *= 2
-                            self.score += self.tiles[col][row]
-                            self.tiles[search][row] = 0
-                            break
-                        elif self.tiles[search][row] != 0:
-                            break
-
-        elif direction == Board.RIGHT:
-            for row in range(4):
-                for col in range(3, 0, -1):
-                    for search in range(col-1, -1, -1):
-                        if self.tiles[col][row] == 0:
-                            self.tiles[col][row] = self.tiles[search][row]
-                            self.tiles[search][row] = 0
-                        elif self.tiles[col][row] == self.tiles[search][row]:
-                            self.tiles[col][row] *= 2
-                            self.score += self.tiles[col][row]
-                            self.tiles[search][row] = 0
-                            break
-                        elif self.tiles[search][row] != 0:
-                            break
-
-    def peak(self, direction):
+    def peek(self, direction):
         tiles = self.tiles.copy()
+        scoreDelta = 0
 
         if direction == Board.UP:
             for col in range(4):
@@ -125,6 +70,7 @@ class Board():
                             tiles[col][search] = 0
                         elif tiles[col][row] == tiles[col][search]:
                             tiles[col][row] *= 2
+                            scoreDelta += tiles[row][col]
                             tiles[col][search] = 0
                             break
                         elif tiles[col][search] != 0:
@@ -139,6 +85,7 @@ class Board():
                             tiles[col][search] = 0
                         elif tiles[col][row] == tiles[col][search]:
                             tiles[col][row] *= 2
+                            scoreDelta += tiles[row][col]
                             tiles[col][search] = 0
                             break
                         elif tiles[col][search] != 0:
@@ -153,6 +100,7 @@ class Board():
                             tiles[search][row] = 0
                         elif tiles[col][row] == tiles[search][row]:
                             tiles[col][row] *= 2
+                            scoreDelta += tiles[row][col]
                             tiles[search][row] = 0
                             break
                         elif tiles[search][row] != 0:
@@ -167,10 +115,13 @@ class Board():
                             tiles[search][row] = 0
                         elif tiles[col][row] == tiles[search][row]:
                             tiles[col][row] *= 2
+                            scoreDelta += tiles[row][col]
                             tiles[search][row] = 0
                             break
                         elif tiles[search][row] != 0:
                             break
+
+        return (tiles, scoreDelta)
 
     def placeTile(self):
         validSquares = []

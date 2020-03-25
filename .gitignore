@@ -2,3 +2,7 @@
 __pycache__/
 
 *.gnm
+
+2048run-*/
+
+.vscode/
